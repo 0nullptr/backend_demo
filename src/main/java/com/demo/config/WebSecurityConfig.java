@@ -18,19 +18,8 @@ public class WebSecurityConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(getSessionInterceptor()).
                 addPathPatterns(
-                    "/**"
                 ).excludePathPatterns(
-                        "/login",
-                        "/buy/**",
-                        "/setMsg",
-                        "/getMsg",
-                        "/**/*.html",
-                        "/**/*.js",
-                        "/**/*.css",
-                        "/**/*.ico",
-                        "/**/*.jpg",
-                        "/**/*.png",
-                        "/**/*.woff",
-                        "/**/*.ttf");
+                    "/**"
+                );
     }
 }
