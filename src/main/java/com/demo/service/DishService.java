@@ -1,0 +1,57 @@
+package com.demo.service;
+
+import java.math.BigDecimal;
+import java.util.Date;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.stereotype.Service;
+
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.demo.dao.entity.Dish;
+import com.demo.dao.mapper.DishMapper;
+
+@SpringBootApplication
+@Service
+public class DishService {
+    @Autowired
+    private DishMapper dishMapper;
+
+    @Autowired
+    private ContainService containService;
+
+    public Dish getDish(Long DishID) {
+        QueryWrapper<Dish> dishWrapper = new QueryWrapper<>();
+        dishWrapper.eq("DishID", DishID);
+        Dish dish = dishMapper.selectOne(dishWrapper);
+        return dish;
+    }
+
+    public void insertDish(Dish dish) {
+        dishMapper.insert(dish);
+    }
+
+    public Dish getDishExceptDishID(String dishName, BigDecimal dishValue, Long SchoolID) {
+        QueryWrapper<Dish> dishWrapper = new QueryWrapper<>();
+        dishWrapper
+                .eq("dishName", dishName)
+                .eq("dishValue", dishValue)
+                .eq("SchoolID", 1);
+        Dish dish = dishMapper.selectOne(dishWrapper);
+        return dish;
+    }
+
+    public void updateDishInfo(Long BoxID, String dishName, BigDecimal dishValue) {
+        Dish dish = new Dish();
+        dish.setDishName(dishName)
+                .setDishValue(dishValue)
+                .setSchoolID((long) 1);
+        Dish resDish = getDishExceptDishID(dishName, dishValue, (long)1);
+        if (resDish == null) {
+            insertDish(dish);
+            resDish = getDishExceptDishID(dishName, dishValue, (long)1);
+        }
+        dish.setDishID(resDish.getDishID());
+        containService.insertContain(dish, BoxID, new Date(), 1);
+    }
+}
