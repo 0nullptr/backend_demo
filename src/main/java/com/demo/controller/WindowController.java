@@ -34,7 +34,29 @@ public class WindowController {
     public List<Window> getWindowsInfo(HttpServletRequest request) {
         HttpSession session = request.getSession();
         System.out.println("get  id: "+session.getId());
+
+        String StuffID = session.getId();
         Long SchoolID = (long) 1;
+        Connection Conn = null;
+        String driver = "com.mysql.jdbc.Driver";
+        String url = "jdbc:mysql://localhost:3306/dishmanagedatabase?useUnicode=true&characterEncoding=utf-8&useSSL=false";
+        String user = "root";
+        String password = "root";
+        try {
+            Class.forName(driver);
+            Conn = DriverManager.getConnection(url, user, password);
+            Statement statement = Conn.createStatement();
+            String sql = "select * from Staff where StuffID = '" + StuffID + "'";
+            ResultSet resultSet = statement.executeQuery(sql);
+           while (resultSet.next()) {
+                SchoolID = resultSet.getLong("SchoolID");
+            }
+            resultSet.close();
+            Conn.close();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        
         List<Window> windowList = windowService.getWindowListBySchoolID(SchoolID);
         return windowList;
     }
