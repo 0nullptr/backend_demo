@@ -1,6 +1,10 @@
 package com.demo.controller;
 
 import java.util.HashMap;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -38,6 +42,7 @@ public class LoginController {
     public HashMap<String, Object> login(HttpServletRequest request, @RequestBody String json) throws Exception {
         JSONObject jsonObject = JSONObject.parse(json);
         String code = jsonObject.getString("code");
+        String state = jsonObject.getString("state");
         String url = "https://api.weixin.qq.com/sns/jscode2session"
                 + "?appid=" + weChatAppletProperties.getAppid()
                 + "&secret=" + weChatAppletProperties.getSecret()
@@ -80,7 +85,39 @@ public class LoginController {
             HttpSession session = request.getSession();
             session.setAttribute("open_id", jObject.getString("openid"));
             redisTemplate.opsForValue().set("open_id:" + jObject.getString("openid"), session.getId());
+
+            String UnionID = jObject.getString("unionid");
+            Connection Conn;
+            String driver = "com.mysql.jdbc.Driver";
+            String sqlurl = "jdbc:mysql://localhost:3306/dishmanagedatabase?useUnicode=true&characterEncoding=utf-8&useSSL=false";
+            String user = "root";
+            String password = "root";
+            try {
+                Class.forName(driver);
+                Conn = DriverManager.getConnection(sqlurl, user, password);
+                Statement statement = Conn.createStatement();
+                String sql1, sql2;
+                if (state.equals("0")) {
+                    sql1 = "select * from Staff where StuffID = '" + UnionID + "';";                    
+                } else {
+                    sql1 = "select * from Parent where ParentID = '" + UnionID + "';";  
+                }
+                ResultSet resultSet = statement.executeQuery(sql1);
+                if(!resultSet.next()) {
+                    if (state.equals("0")) {
+                        sql2 = "insert into Staff values('" + UnionID + "');";                    
+                    } else {
+                        sql2 = "insert into Parent values('" + UnionID + "');";      
+                    }
+                    statement.execute(sql2);
+                }              
+                resultSet.close();
+                Conn.close();
+            } catch (Exception e) {
+                System.out.println(e);
+            }
         }
+        
         return hashMap;
     }
 }
