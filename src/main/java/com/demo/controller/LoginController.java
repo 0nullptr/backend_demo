@@ -1,10 +1,6 @@
 package com.demo.controller;
 
 import java.util.HashMap;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -27,6 +23,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.demo.properties.WeChatAppletProperties;
+import com.demo.service.ParentService;
+import com.demo.service.StaffService;
 
 @RestController
 @SpringBootApplication
@@ -38,11 +36,17 @@ public class LoginController {
     @Autowired
     private StringRedisTemplate redisTemplate;
 
+    @Autowired
+    private StaffService staffService;
+
+    @Autowired
+    private ParentService parentService;
+
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public HashMap<String, Object> login(HttpServletRequest request, @RequestBody String json) throws Exception {
         JSONObject jsonObject = JSONObject.parse(json);
         String code = jsonObject.getString("code");
-        String state = jsonObject.getString("state");
+        int state = jsonObject.getIntValue("state");
         String url = "https://api.weixin.qq.com/sns/jscode2session"
                 + "?appid=" + weChatAppletProperties.getAppid()
                 + "&secret=" + weChatAppletProperties.getSecret()
@@ -86,35 +90,15 @@ public class LoginController {
             session.setAttribute("open_id", jObject.getString("openid"));
             redisTemplate.opsForValue().set("open_id:" + jObject.getString("openid"), session.getId());
 
-            String UnionID = jObject.getString("unionid");
-            Connection Conn;
-            String driver = "com.mysql.jdbc.Driver";
-            String sqlurl = "jdbc:mysql://localhost:3306/dishmanagedatabase?useUnicode=true&characterEncoding=utf-8&useSSL=false";
-            String user = "root";
-            String password = "root";
-            try {
-                Class.forName(driver);
-                Conn = DriverManager.getConnection(sqlurl, user, password);
-                Statement statement = Conn.createStatement();
-                String sql1, sql2;
-                if (state.equals("0")) {
-                    sql1 = "select * from Staff where StuffID = '" + UnionID + "';";                    
-                } else {
-                    sql1 = "select * from Parent where ParentID = '" + UnionID + "';";  
+            Long UnionID = Long.valueOf(jObject.getString("unionid"));
+            if (state == 0) {
+                if (staffService.isStaffExist(UnionID) == 0) {
+                    staffService.createStaff(UnionID);
                 }
-                ResultSet resultSet = statement.executeQuery(sql1);
-                if(!resultSet.next()) {
-                    if (state.equals("0")) {
-                        sql2 = "insert into Staff values('" + UnionID + "');";                    
-                    } else {
-                        sql2 = "insert into Parent values('" + UnionID + "');";      
-                    }
-                    statement.execute(sql2);
-                }              
-                resultSet.close();
-                Conn.close();
-            } catch (Exception e) {
-                System.out.println(e);
+            } else if (state == 1) {
+                if (parentService.isParentExist(UnionID) == 0) {
+                    parentService.createParent(UnionID);
+                }
             }
         }
         
