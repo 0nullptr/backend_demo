@@ -2,6 +2,7 @@ package com.demo.service;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -20,6 +21,9 @@ public class DishService {
     @Autowired
     private ContainService containService;
 
+    @Autowired
+    private SchoolService schoolService;
+
     public Dish getDish(Long DishID) {
         QueryWrapper<Dish> dishWrapper = new QueryWrapper<>();
         dishWrapper.eq("DishID", DishID);
@@ -36,7 +40,7 @@ public class DishService {
         dishWrapper
                 .eq("dishName", dishName)
                 .eq("dishValue", dishValue)
-                .eq("SchoolID", 1);
+                .eq("SchoolID", SchoolID);
         Dish dish = dishMapper.selectOne(dishWrapper);
         return dish;
     }
@@ -53,5 +57,31 @@ public class DishService {
         }
         dish.setDishID(resDish.getDishID());
         containService.insertContain(dish, BoxID, new Date(), 1);
+    }
+
+    public List<Dish> getAllInfo(Long UnionID) {
+        Long SchoolID = schoolService.getSchoolIDByStuffID(UnionID);
+
+        QueryWrapper<Dish> dishWrapper = new QueryWrapper<>();
+        dishWrapper.eq("SchoolID", SchoolID);
+        List<Dish> DishList = dishMapper.selectList(dishWrapper);
+        return DishList;
+    }
+
+    public Dish getDishValue(Long UnionID, String name) {
+        Long SchoolID = schoolService.getSchoolIDByStuffID(UnionID);
+
+        QueryWrapper<Dish> dishWrapper = new QueryWrapper<>();
+        dishWrapper.eq("SchoolID", SchoolID);
+        dishWrapper.eq("DishName", name);
+        dishWrapper.orderByDesc("DishID");
+        Dish dish = dishMapper.selectOne(dishWrapper);
+        return dish;
+    }
+
+    public void updateDishValue(Dish dish) {
+        QueryWrapper<Dish> dishWrapper = new QueryWrapper<>();
+        dishWrapper.eq("DishID", dish.getDishID());
+        dishMapper.update(dish, dishWrapper);
     }
 }
