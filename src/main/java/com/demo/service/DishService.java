@@ -59,18 +59,16 @@ public class DishService {
         containService.insertContain(dish, BoxID, new Date(), 1);
     }
 
-    public List<Dish> getAllInfo(Long UnionID) {
+    public List<Dish> getDishInfo(Long UnionID) {
         Long SchoolID = schoolService.getSchoolIDByStuffID(UnionID);
-
         QueryWrapper<Dish> dishWrapper = new QueryWrapper<>();
         dishWrapper.eq("SchoolID", SchoolID);
         List<Dish> DishList = dishMapper.selectList(dishWrapper);
         return DishList;
     }
 
-    public Dish getDishValue(Long UnionID, String name) {
+    public Dish getDishValueByName(Long UnionID, String name) {
         Long SchoolID = schoolService.getSchoolIDByStuffID(UnionID);
-
         QueryWrapper<Dish> dishWrapper = new QueryWrapper<>();
         dishWrapper.eq("SchoolID", SchoolID);
         dishWrapper.eq("DishName", name);
@@ -79,9 +77,10 @@ public class DishService {
         return dish;
     }
 
-    public void updateDishValue(Dish dish) {
-        QueryWrapper<Dish> dishWrapper = new QueryWrapper<>();
-        dishWrapper.eq("DishID", dish.getDishID());
-        dishMapper.update(dish, dishWrapper);
+    public void updateDishValue(Long UnionID, Dish dish) {
+        Long SchoolID = schoolService.getSchoolIDByStuffID(UnionID);
+        dish.setSchoolID(SchoolID);
+        insertDish(dish);
     }
 }
+
