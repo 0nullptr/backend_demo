@@ -19,6 +19,7 @@ import com.alibaba.fastjson2.JSONObject;
 import com.demo.dao.entity.Window;
 import com.demo.service.DishService;
 import com.demo.service.WindowService;
+import com.demo.service.SchoolService;
 
 @RestController
 @SpringBootApplication
@@ -30,11 +31,17 @@ public class WindowController {
     @Autowired
     private WindowService windowService;
 
+    @Autowired
+    private SchoolService schoolService;
+
     @RequestMapping(value = "/window/getWindowsInfo", method = RequestMethod.POST)
     public List<Window> getWindowsInfo(HttpServletRequest request) {
         HttpSession session = request.getSession();
         System.out.println("get  id: "+session.getId());
-        Long SchoolID = (long) 1;
+
+        Long StuffID = Long.valueOf(session.getId()) ;
+        Long SchoolID = schoolService.getSchoolIDByStuffID(StuffID);
+        
         List<Window> windowList = windowService.getWindowListBySchoolID(SchoolID);
         return windowList;
     }

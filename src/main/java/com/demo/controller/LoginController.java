@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.demo.properties.WeChatAppletProperties;
+import com.demo.service.ParentService;
+import com.demo.service.StaffService;
 
 @RestController
 @SpringBootApplication
@@ -34,10 +36,17 @@ public class LoginController {
     @Autowired
     private StringRedisTemplate redisTemplate;
 
+    @Autowired
+    private StaffService staffService;
+
+    @Autowired
+    private ParentService parentService;
+
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public HashMap<String, Object> login(HttpServletRequest request, @RequestBody String json) throws Exception {
         JSONObject jsonObject = JSONObject.parse(json);
         String code = jsonObject.getString("code");
+        int state = jsonObject.getIntValue("state");
         String url = "https://api.weixin.qq.com/sns/jscode2session"
                 + "?appid=" + weChatAppletProperties.getAppid()
                 + "&secret=" + weChatAppletProperties.getSecret()
@@ -80,7 +89,19 @@ public class LoginController {
             HttpSession session = request.getSession();
             session.setAttribute("open_id", jObject.getString("openid"));
             redisTemplate.opsForValue().set("open_id:" + jObject.getString("openid"), session.getId());
+
+            Long UnionID = Long.valueOf(jObject.getString("unionid"));
+            if (state == 0) {
+                if (staffService.isStaffExist(UnionID) == 0) {
+                    staffService.createStaff(UnionID);
+                }
+            } else if (state == 1) {
+                if (parentService.isParentExist(UnionID) == 0) {
+                    parentService.createParent(UnionID);
+                }
+            }
         }
+        
         return hashMap;
     }
 }
