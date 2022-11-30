@@ -21,9 +21,6 @@ public class DishService {
     @Autowired
     private ContainService containService;
 
-    @Autowired
-    private SchoolService schoolService;
-
     public Dish getDish(Long DishID) {
         QueryWrapper<Dish> dishWrapper = new QueryWrapper<>();
         dishWrapper.eq("DishID", DishID);
@@ -59,28 +56,33 @@ public class DishService {
         containService.insertContain(dish, BoxID, new Date(), 1);
     }
 
-    public List<Dish> getDishInfo(Long UnionID) {
-        Long SchoolID = schoolService.getSchoolIDByStuffID(UnionID);
+    public List<Dish> getDishInfo(Long SchoolID) {
         QueryWrapper<Dish> dishWrapper = new QueryWrapper<>();
         dishWrapper.eq("SchoolID", SchoolID);
         List<Dish> DishList = dishMapper.selectList(dishWrapper);
+        for (int i = 0; i < DishList.size(); i++) {
+            Long DishID = DishList.get(i).getDishID();
+            DishList.get(i).setTimes(getDishTimesByDishID(DishID));
+        }        
         return DishList;
     }
 
-    public Dish getDishValueByName(Long UnionID, String name) {
-        Long SchoolID = schoolService.getSchoolIDByStuffID(UnionID);
+    public Dish getDishValueByName(Long SchoolID, String name) {
         QueryWrapper<Dish> dishWrapper = new QueryWrapper<>();
         dishWrapper.eq("SchoolID", SchoolID);
         dishWrapper.eq("DishName", name);
-        dishWrapper.orderByDesc("DishID");
-        Dish dish = dishMapper.selectOne(dishWrapper);
+        List<Dish> DishList = dishMapper.selectList(dishWrapper);
+        Dish dish = DishList.get(DishList.size() - 1);
         return dish;
     }
 
-    public void updateDishValue(Long UnionID, Dish dish) {
-        Long SchoolID = schoolService.getSchoolIDByStuffID(UnionID);
+    public void updateDishValue(Long SchoolID, Dish dish) {
         dish.setSchoolID(SchoolID);
         insertDish(dish);
     }
-}
 
+    public int getDishTimesByDishID(Long DishID) {
+        // to do
+        return 0;
+    }
+}
