@@ -14,16 +14,30 @@ public class StaffService {
     @Autowired
     private StaffMapper staffMapper;
 
-    public int isStaffExist(Long StaffID) {
+    public boolean isStaffExist(String UnionID) {
         QueryWrapper<Staff> staffWrapper = new QueryWrapper<>();
-        staffWrapper.eq("StaffID", StaffID);
+        staffWrapper.eq("UnionID", UnionID);
         int Count = staffMapper.selectCount(staffWrapper);
-        return Count;
+        return Count == 0 ? false : true;
     }
 
-    public void createStaff(Long StaffID) {
+    public void createStaff(String UnionID) {
         Staff staff = new Staff();
-        staff.setStaffID(StaffID);
+        staff.setUnionID(UnionID);
         staffMapper.insert(staff);
+    }
+
+    public Long getStaffIDByUnionID(String UnionID) {
+        QueryWrapper<Staff> staffWrapper = new QueryWrapper<>();
+        staffWrapper.eq("UnionID", UnionID);
+        Staff staff = staffMapper.selectOne(staffWrapper);
+        return staff.getStaffID();
+    }
+
+    public Long getSchoolIDByUnionID(String UnionID) {
+        QueryWrapper<Staff> staffWrapper = new QueryWrapper<>();
+        staffWrapper.eq("UnionID", UnionID);
+        Staff staff = staffMapper.selectOne(staffWrapper);
+        return staff.getSchoolID();
     }
 }

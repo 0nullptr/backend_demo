@@ -19,4 +19,5 @@ import lombok.experimental.Accessors;
 public class Parent implements Serializable{
     @TableId(type = IdType.AUTO)
     private Long ParentID;
+    private String UnionID;
 }
