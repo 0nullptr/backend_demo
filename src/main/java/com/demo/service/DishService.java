@@ -9,7 +9,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.demo.dao.entity.Contain;
 import com.demo.dao.entity.Dish;
+import com.demo.dao.mapper.ContainMapper;
 import com.demo.dao.mapper.DishMapper;
 
 @SpringBootApplication
@@ -19,7 +21,13 @@ public class DishService {
     private DishMapper dishMapper;
 
     @Autowired
-    private ContainService containService;
+    private ContainMapper containMapper;
+
+    @Autowired
+    private DateService dateService;
+
+    @Autowired
+    private ContainService containService;    
 
     public Dish getDish(Long DishID) {
         QueryWrapper<Dish> dishWrapper = new QueryWrapper<>();
@@ -82,7 +90,18 @@ public class DishService {
     }
 
     public int getDishTimesByDishID(Long DishID) {
-        // to do
-        return 0;
+        int times;
+        Date dateNow = new Date();
+        Date dateFormer = new Date(dateNow.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+        QueryWrapper<Contain> containWrapper = new QueryWrapper<>();
+        containWrapper.eq("DishID", DishID);
+        containWrapper.between(
+            "SellTime",
+            dateService.DateToString(dateFormer),
+            dateService.DateToString(dateNow)
+        );
+        times = containMapper.selectCount(containWrapper);
+        return times;
     }
 }
