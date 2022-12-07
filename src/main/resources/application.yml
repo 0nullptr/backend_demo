@@ -33,3 +33,6 @@ wxapp:
   secret: c207677a41225e91dfeafdfbdeac0ebc
   grantType: authorization_code
 
+file:
+  save:
+    path: E:/file/

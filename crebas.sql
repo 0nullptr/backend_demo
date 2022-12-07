@@ -79,6 +79,14 @@ CREATE TABLE `windows` (
     PRIMARY KEY(`WindowID`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
+DROP TABLE IF EXISTS `image`;
+CREATE TABLE `image` (
+    `ImageID` BIGINT NOT NULL AUTO_INCREMENT,
+    `DishID` BIGINT NULL DEFAULT NULL,
+    `Path` VARCHAR(36) NOT NULL,
+    PRIMARY KEY(`ImageID`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
+
 INSERT INTO `school` (`SchoolName`, `WindowCount`) VALUES('杭州电子科技大学', 1);
 INSERT INTO `windows` (`SchoolID`, `BoxCount`) VALUES(1, 6);
 INSERT INTO `box` (`WindowID`,`PositionNumber`) VALUES(1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6);
