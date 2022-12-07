@@ -1,5 +1,7 @@
 package com.demo.service;
 
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,5 +31,31 @@ public class BuyService {
         BuyWrapper.eq("StudentID", StudentID).in("ContainID", containIDs);
         List<Buy> buyList = buyMapper.selectList(BuyWrapper);
         return buyList;
+    }
+
+    public ArrayList<Number> getLastWeekSpendByStudentID(Long StudentID) {
+        QueryWrapper<Buy> BuyWrapper = new QueryWrapper<>();
+        BuyWrapper.eq("StudentID", StudentID);
+        ArrayList<Number> lists = new ArrayList<>();
+
+        Calendar c1 = Calendar.getInstance();
+        Calendar c2 = c1;
+        c1.add(Calendar.DATE, -1);
+        long spend = 0;
+        List<Buy> buyList;
+        for(int i = 0; i < 7; i++) {
+            BuyWrapper.between("buyDate", c1.getTime(), c2.getTime());
+            buyList = buyMapper.selectList(BuyWrapper);
+            for (int j = 0; j < buyList.size(); j++) {
+                spend += buyList.get(j).getDishValue().longValue();
+            }
+            lists.add(i, spend);
+
+            spend = 0;
+            c1.add(Calendar.DATE, -1);
+            c2.add(Calendar.DATE, -1);
+        }
+
+        return lists;
     }
 }
