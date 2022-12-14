@@ -181,4 +181,15 @@ public class BuyController {
         return buys;
     }
 
+    @RequestMapping(value = "/buy/lastWeekSpend", method = RequestMethod.POST)
+    public HashMap<String , Object> lastWeekSpend(@RequestBody String json) {
+        HashMap<String, Object> returns = new HashMap<>();
+        int state = 1;
+        JSONObject jsonObject = JSONObject.parseObject(json);
+        Long id = Long.parseLong(jsonObject.getString("id"));  // 学生id
+        ArrayList<Number> lists = buyService.getLastWeekSpendByStudentID(id);
+        returns.put("state", state);
+        returns.put("lists", lists);
+        return returns;
+    }
 }

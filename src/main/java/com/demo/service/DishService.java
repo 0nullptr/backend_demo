@@ -9,7 +9,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.demo.dao.entity.Contain;
 import com.demo.dao.entity.Dish;
+import com.demo.dao.mapper.ContainMapper;
 import com.demo.dao.mapper.DishMapper;
 
 @SpringBootApplication
@@ -19,10 +21,13 @@ public class DishService {
     private DishMapper dishMapper;
 
     @Autowired
-    private ContainService containService;
+    private ContainMapper containMapper;
 
     @Autowired
-    private SchoolService schoolService;
+    private DateService dateService;
+
+    @Autowired
+    private ContainService containService;    
 
     public Dish getDish(Long DishID) {
         QueryWrapper<Dish> dishWrapper = new QueryWrapper<>();
@@ -59,28 +64,44 @@ public class DishService {
         containService.insertContain(dish, BoxID, new Date(), 1);
     }
 
-    public List<Dish> getDishInfo(Long UnionID) {
-        Long SchoolID = schoolService.getSchoolIDByStuffID(UnionID);
+    public List<Dish> getDishInfo(Long SchoolID) {
         QueryWrapper<Dish> dishWrapper = new QueryWrapper<>();
         dishWrapper.eq("SchoolID", SchoolID);
         List<Dish> DishList = dishMapper.selectList(dishWrapper);
+        for (int i = 0; i < DishList.size(); i++) {
+            Long DishID = DishList.get(i).getDishID();
+            DishList.get(i).setTimes(getDishTimesByDishID(DishID));
+        }        
         return DishList;
     }
 
-    public Dish getDishValueByName(Long UnionID, String name) {
-        Long SchoolID = schoolService.getSchoolIDByStuffID(UnionID);
+    public Dish getDishValueByName(Long SchoolID, String name) {
         QueryWrapper<Dish> dishWrapper = new QueryWrapper<>();
         dishWrapper.eq("SchoolID", SchoolID);
         dishWrapper.eq("DishName", name);
-        dishWrapper.orderByDesc("DishID");
-        Dish dish = dishMapper.selectOne(dishWrapper);
+        List<Dish> DishList = dishMapper.selectList(dishWrapper);
+        Dish dish = DishList.get(DishList.size() - 1);
         return dish;
     }
 
-    public void updateDishValue(Long UnionID, Dish dish) {
-        Long SchoolID = schoolService.getSchoolIDByStuffID(UnionID);
+    public void updateDishValue(Long SchoolID, Dish dish) {
         dish.setSchoolID(SchoolID);
         insertDish(dish);
     }
-}
 
+    public int getDishTimesByDishID(Long DishID) {
+        int times;
+        Date dateNow = new Date();
+        Date dateFormer = new Date(dateNow.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+        QueryWrapper<Contain> containWrapper = new QueryWrapper<>();
+        containWrapper.eq("DishID", DishID);
+        containWrapper.between(
+            "SellTime",
+            dateService.DateToString(dateFormer),
+            dateService.DateToString(dateNow)
+        );
+        times = containMapper.selectCount(containWrapper);
+        return times;
+    }
+}
