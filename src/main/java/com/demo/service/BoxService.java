@@ -1,5 +1,7 @@
 package com.demo.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.stereotype.Service;
@@ -19,7 +21,13 @@ public class BoxService {
         boxWrapper
                 .eq("PositionNumber", PositionNumber)
                 .eq("WindowID", WindowID);
-        Box box = boxMapper.selectOne(boxWrapper);
+        List<Box> BoxList = boxMapper.selectList(boxWrapper);
+        Box box;
+        if (BoxList.size() == 0) {
+            box = null;
+        } else {
+            box = BoxList.get(BoxList.size() - 1);
+        }
         return box;
     }
 }

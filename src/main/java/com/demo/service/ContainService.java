@@ -24,7 +24,13 @@ public class ContainService {
                 .eq("BoxID", boxID)
                 .eq("SellDate", SellDate)
                 .eq("SellMeal", SellMeal);
-        Contain contain = containMapper.selectOne(containWrapper);
+        List<Contain> containList = containMapper.selectList(containWrapper);
+        Contain contain;
+        if (containList.size() == 0) {
+            contain = null;
+        } else {
+            contain = containList.get(containList.size() - 1);
+        }
         return contain;
     }
 

@@ -21,7 +21,13 @@ public class StudentService {
         studentWrapper
                 .eq("CardID", CardID)
                 .eq("SchoolID", SchoolID);
-        Student student = studentMapper.selectOne(studentWrapper);
+        List<Student> studentList = studentMapper.selectList(studentWrapper);
+        Student student;
+        if (studentList.size() == 0) {
+            student = null;
+        } else {
+            student = studentList.get(studentList.size() - 1);
+        }
         return student;
     }
 

@@ -1,5 +1,7 @@
 package com.demo.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.stereotype.Service;
@@ -24,21 +26,33 @@ public class StaffService {
     public void createStaff(String UnionID) {
         Staff staff = new Staff();
         staff.setUnionID(UnionID);
-        staff.setSchoolID((long)1);
+        staff.setSchoolID((long) 1);
         staffMapper.insert(staff);
     }
 
     public Long getStaffIDByUnionID(String UnionID) {
         QueryWrapper<Staff> staffWrapper = new QueryWrapper<>();
         staffWrapper.eq("UnionID", UnionID);
-        Staff staff = staffMapper.selectOne(staffWrapper);
+        List<Staff> staffList = staffMapper.selectList(staffWrapper);
+        Staff staff;
+        if (staffList.size() == 0) {
+            staff = null;
+        } else {
+            staff = staffList.get(staffList.size() - 1);
+        }
         return staff.getStaffID();
     }
 
     public Long getSchoolIDByUnionID(String UnionID) {
         QueryWrapper<Staff> staffWrapper = new QueryWrapper<>();
         staffWrapper.eq("UnionID", UnionID);
-        Staff staff = staffMapper.selectOne(staffWrapper);
+        List<Staff> staffList = staffMapper.selectList(staffWrapper);
+        Staff staff;
+        if (staffList.size() == 0) {
+            staff = null;
+        } else {
+            staff = staffList.get(staffList.size() - 1);
+        }
         return staff.getSchoolID();
     }
 }
