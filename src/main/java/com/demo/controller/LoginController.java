@@ -87,21 +87,20 @@ public class LoginController {
             hashMap.put("unionid", jObject.getString("unionid"));
             hashMap.put("session_key", jObject.getString("session_key"));
             HttpSession session = request.getSession();
-            session.setAttribute("open_id", jObject.getString("openid"));
-            redisTemplate.opsForValue().set("open_id:" + jObject.getString("openid"), session.getId());
+            session.setAttribute("unionid", jObject.getString("unionid"));
+            redisTemplate.opsForValue().set("unionid:" + jObject.getString("unionid"), session.getId());
 
-            Long UnionID = Long.valueOf(jObject.getString("unionid"));
+            String UnionID = jObject.getString("unionid");
             if (state == 0) {
-                if (staffService.isStaffExist(UnionID) == 0) {
+                if (!staffService.isStaffExist(UnionID)) {
                     staffService.createStaff(UnionID);
                 }
             } else if (state == 1) {
-                if (parentService.isParentExist(UnionID) == 0) {
+                if (!parentService.isParentExist(UnionID)) {
                     parentService.createParent(UnionID);
                 }
             }
         }
-        
         return hashMap;
     }
 }

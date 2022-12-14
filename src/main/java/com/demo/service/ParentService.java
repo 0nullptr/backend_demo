@@ -13,17 +13,17 @@ import com.demo.dao.mapper.ParentMapper;
 public class ParentService {
     @Autowired
     private ParentMapper parentMapper;
-    
-    public int isParentExist(Long ParentID) {
+
+    public boolean isParentExist(String UnionID) {
         QueryWrapper<Parent> parentWrapper = new QueryWrapper<>();
-        parentWrapper.eq("ParentID", ParentID);
+        parentWrapper.eq("UnionID", UnionID);
         int Count = parentMapper.selectCount(parentWrapper);
-        return Count;
+        return Count == 0 ? false : true;
     }
 
-    public void createParent(Long ParentID) {
+    public void createParent(String UnionID) {
         Parent parent = new Parent();
-        parent.setParentID(ParentID);
+        parent.setUnionID(UnionID);
         parentMapper.insert(parent);
     }
 }

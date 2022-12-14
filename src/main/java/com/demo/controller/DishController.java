@@ -18,7 +18,7 @@ import com.demo.service.DishService;
 public class DishController {
     @Autowired
     private DishService dishService;
-    
+
     public HashMap<String, Object> getAllInfo(HttpCookie httpCookie) {
         HashMap<String, Object> returns = new HashMap<>();
         int state = 1;

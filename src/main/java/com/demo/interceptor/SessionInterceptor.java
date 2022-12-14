@@ -19,17 +19,16 @@ public class SessionInterceptor implements HandlerInterceptor{
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         HttpSession session = request.getSession();
-        if (session.getAttribute("open_id") != null) {
+        if (session.getAttribute("unionid") != null) {
             try {
-                String open_id = redisTemplate.opsForValue().get("open_id:" + session.getAttribute("open_id"));
-                if (open_id != null && open_id.equals(session.getId())) {
+                String unionid = redisTemplate.opsForValue().get("unionid:" + session.getAttribute("unionid"));
+                if (unionid != null && unionid.equals(session.getId())) {
                     return true;
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-        System.out.println(session);
         return false;
     }
 
