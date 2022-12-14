@@ -3,11 +3,9 @@ package com.demo.controller;
 import java.math.BigDecimal;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,7 +17,7 @@ import com.alibaba.fastjson2.JSONObject;
 import com.demo.dao.entity.Window;
 import com.demo.service.DishService;
 import com.demo.service.WindowService;
-import com.demo.service.SchoolService;
+import com.demo.service.StaffService;
 
 @RestController
 @SpringBootApplication
@@ -32,16 +30,12 @@ public class WindowController {
     private WindowService windowService;
 
     @Autowired
-    private SchoolService schoolService;
+    private StaffService staffService;
 
     @RequestMapping(value = "/window/getWindowsInfo", method = RequestMethod.POST)
-    public List<Window> getWindowsInfo(HttpServletRequest request) {
-        HttpSession session = request.getSession();
-        System.out.println("get  id: "+session.getId());
+    public List<Window> getWindowsInfo(@CookieValue(value = "unionid", required = false) String UnionID) {
+        Long SchoolID = staffService.getSchoolIDByUnionID(UnionID);
 
-        Long StuffID = Long.valueOf(session.getId()) ;
-        Long SchoolID = schoolService.getSchoolIDByStuffID(StuffID);
-        
         List<Window> windowList = windowService.getWindowListBySchoolID(SchoolID);
         return windowList;
     }

@@ -14,7 +14,7 @@ public class BoxService {
     @Autowired
     private BoxMapper boxMapper;
 
-    public Box getBoxByPositionNumberAndWinodwID(Long PositionNumber, Long WindowID) {
+    public Box getBoxByPositionNumberAndWindowID(Long PositionNumber, Long WindowID) {
         QueryWrapper<Box> boxWrapper = new QueryWrapper<>();
         boxWrapper
                 .eq("PositionNumber", PositionNumber)

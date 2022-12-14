@@ -19,6 +19,7 @@ import lombok.experimental.Accessors;
 public class Staff implements Serializable {
     @TableId(type = IdType.AUTO)
     private Long StaffID;
+    private String UnionID;
 
     private Long SchoolID;
 }

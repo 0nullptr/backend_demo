@@ -104,7 +104,7 @@ public class BuyController {
                 state = "ERROR";
                 break;
             }
-            Box box = boxService.getBoxByPositionNumberAndWinodwID(PositionNumber, (long) 1);
+            Box box = boxService.getBoxByPositionNumberAndWindowID(PositionNumber, (long) 1);
             if (box == null) {
                 state = "ERROR";
                 break;

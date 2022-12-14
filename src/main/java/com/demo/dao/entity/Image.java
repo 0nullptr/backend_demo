@@ -1,7 +1,5 @@
 package com.demo.dao.entity;
 
-import java.io.Serializable;
-
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -15,9 +13,10 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(chain = true)
-@TableName("parent")
-public class Parent implements Serializable{
+@TableName("image")
+public class Image {
     @TableId(type = IdType.AUTO)
-    private Long ParentID;
-    private String UnionID;
+    private Long ImageID;
+    private Long DishID;
+    private String Path;
 }
