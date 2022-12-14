@@ -27,12 +27,18 @@ public class DishService {
     private DateService dateService;
 
     @Autowired
-    private ContainService containService;    
+    private ContainService containService;
 
     public Dish getDish(Long DishID) {
         QueryWrapper<Dish> dishWrapper = new QueryWrapper<>();
         dishWrapper.eq("DishID", DishID);
-        Dish dish = dishMapper.selectOne(dishWrapper);
+        List<Dish> dishList = dishMapper.selectList(dishWrapper);
+        Dish dish;
+        if (dishList.size() == 0) {
+            dish = null;
+        } else {
+            dish = dishList.get(dishList.size() - 1);
+        }
         return dish;
     }
 
@@ -46,7 +52,13 @@ public class DishService {
                 .eq("dishName", dishName)
                 .eq("dishValue", dishValue)
                 .eq("SchoolID", SchoolID);
-        Dish dish = dishMapper.selectOne(dishWrapper);
+        List<Dish> dishList = dishMapper.selectList(dishWrapper);
+        Dish dish;
+        if (dishList.size() == 0) {
+            dish = null;
+        } else {
+            dish = dishList.get(dishList.size() - 1);
+        }
         return dish;
     }
 
@@ -55,10 +67,10 @@ public class DishService {
         dish.setDishName(dishName)
                 .setDishValue(dishValue)
                 .setSchoolID((long) 1);
-        Dish resDish = getDishExceptDishID(dishName, dishValue, (long)1);
+        Dish resDish = getDishExceptDishID(dishName, dishValue, (long) 1);
         if (resDish == null) {
             insertDish(dish);
-            resDish = getDishExceptDishID(dishName, dishValue, (long)1);
+            resDish = getDishExceptDishID(dishName, dishValue, (long) 1);
         }
         dish.setDishID(resDish.getDishID());
         containService.insertContain(dish, BoxID, new Date(), 1);
@@ -71,7 +83,7 @@ public class DishService {
         for (int i = 0; i < DishList.size(); i++) {
             Long DishID = DishList.get(i).getDishID();
             DishList.get(i).setTimes(getDishTimesByDishID(DishID));
-        }        
+        }
         return DishList;
     }
 
@@ -80,7 +92,12 @@ public class DishService {
         dishWrapper.eq("SchoolID", SchoolID);
         dishWrapper.eq("DishName", name);
         List<Dish> DishList = dishMapper.selectList(dishWrapper);
-        Dish dish = DishList.get(DishList.size() - 1);
+        Dish dish;
+        if (DishList.size() > 0) {
+            dish = DishList.get(DishList.size() - 1);
+        } else {
+            dish = new Dish();
+        }
         return dish;
     }
 
@@ -97,10 +114,9 @@ public class DishService {
         QueryWrapper<Contain> containWrapper = new QueryWrapper<>();
         containWrapper.eq("DishID", DishID);
         containWrapper.between(
-            "SellTime",
-            dateService.DateToString(dateFormer),
-            dateService.DateToString(dateNow)
-        );
+                "SellTime",
+                dateService.DateToString(dateFormer),
+                dateService.DateToString(dateNow));
         times = containMapper.selectCount(containWrapper);
         return times;
     }

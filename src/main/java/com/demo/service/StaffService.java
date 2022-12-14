@@ -24,6 +24,7 @@ public class StaffService {
     public void createStaff(String UnionID) {
         Staff staff = new Staff();
         staff.setUnionID(UnionID);
+        staff.setSchoolID((long)1);
         staffMapper.insert(staff);
     }
 
