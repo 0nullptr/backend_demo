@@ -35,7 +35,6 @@ public class WindowController {
     @RequestMapping(value = "/window/getWindowsInfo", method = RequestMethod.POST)
     public List<Window> getWindowsInfo(@CookieValue(value = "unionid", required = false) String UnionID) {
         Long SchoolID = staffService.getSchoolIDByUnionID(UnionID);
-
         List<Window> windowList = windowService.getWindowListBySchoolID(SchoolID);
         return windowList;
     }
@@ -43,7 +42,6 @@ public class WindowController {
     @RequestMapping(value = "/window/updateDishInfo", method = RequestMethod.POST)
     public String updateDishInfo(@RequestBody String json) {
         boolean success = true;
-        System.out.println(json);
         JSONObject jsonObject = JSONObject.parseObject(json);
         JSONArray NowWindows = JSONArray.parseArray(jsonObject.getString("dishWindows"));
         for (int i = 0; i < NowWindows.size(); i++) {
