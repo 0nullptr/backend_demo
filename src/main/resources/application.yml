@@ -5,6 +5,8 @@ server:
 
 # DataSource Config
 spring:
+  profiles:
+    active: dev
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -27,11 +29,6 @@ mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     map-underscore-to-camel-case: false
-
-wxapp:
-  appid: wx7b1f274e59dc61e8
-  secret: c207677a41225e91dfeafdfbdeac0ebc
-  grantType: authorization_code
 
 file:
   save:
